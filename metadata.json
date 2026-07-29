@@ -1,0 +1,6 @@
+{
+  "name": "Aldorado Rewards",
+  "description": "Premium Watch & Earn platform with verified offerwalls, daily streak bonuses, real-time leaderboard, custom withdrawals, and admin management suite.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
