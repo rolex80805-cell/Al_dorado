@@ -48,10 +48,31 @@ import {
   getAiFraudCheck
 } from './services/api';
 
+const DEFAULT_USER: User = {
+  id: 'usr-101',
+  name: 'Jordan Vance',
+  email: 'jordan@aldorado.com',
+  avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=120&q=80',
+  coins: 18450,
+  usdValue: 18.45,
+  totalEarned: 42100,
+  role: 'user',
+  level: 4,
+  xp: 3200,
+  nextLevelXp: 5000,
+  streakDays: 5,
+  referralCode: 'JORDAN-992',
+  referralCount: 12,
+  referralEarnings: 4500,
+  emailVerified: true,
+  createdAt: '2025-01-15',
+  fraudRiskScore: 'low'
+};
+
 export default function App() {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
   const [activeTab, setActiveTab] = useState<string>('dashboard');
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<User>(DEFAULT_USER);
   const [offers, setOffers] = useState<Offer[]>([]);
   const [completions, setCompletions] = useState<OfferCompletion[]>([]);
   const [paymentMethods, setPaymentMethods] = useState<PaymentMethod[]>([]);
@@ -78,25 +99,45 @@ export default function App() {
   const loadInitialData = async () => {
     try {
       const { user: userData, achievements: achs } = await getUserProfile('usr-101');
-      setUser(userData);
-      setAchievements(achs);
-
-      const { offers: offersData } = await getOffers();
-      setOffers(offersData);
-
-      const { methods } = await getPaymentMethods();
-      setPaymentMethods(methods);
-
-      const { withdrawals: userWds } = await getUserWithdrawals('usr-101');
-      setWithdrawals(userWds);
-
-      const { leaderboard: lb } = await getLeaderboard();
-      setLeaderboard(lb);
-
-      const { stats: adminStats } = await getAdminWithdrawals();
-      setStats(adminStats);
+      if (userData) setUser(userData);
+      if (achs) setAchievements(achs);
     } catch (err) {
-      console.warn('Backend API initial load fallback:', err);
+      console.warn('Backend API profile load fallback:', err);
+    }
+
+    try {
+      const { offers: offersData } = await getOffers();
+      if (offersData) setOffers(offersData);
+    } catch (err) {
+      console.warn('Backend API offers load fallback:', err);
+    }
+
+    try {
+      const { methods } = await getPaymentMethods();
+      if (methods) setPaymentMethods(methods);
+    } catch (err) {
+      console.warn('Backend API payment methods fallback:', err);
+    }
+
+    try {
+      const { withdrawals: userWds } = await getUserWithdrawals('usr-101');
+      if (userWds) setWithdrawals(userWds);
+    } catch (err) {
+      console.warn('Backend API withdrawals fallback:', err);
+    }
+
+    try {
+      const { leaderboard: lb } = await getLeaderboard();
+      if (lb) setLeaderboard(lb);
+    } catch (err) {
+      console.warn('Backend API leaderboard fallback:', err);
+    }
+
+    try {
+      const { stats: adminStats } = await getAdminWithdrawals();
+      if (adminStats) setStats(adminStats);
+    } catch (err) {
+      console.warn('Backend API stats fallback:', err);
     }
   };
 
@@ -295,17 +336,6 @@ export default function App() {
   const handleRunFraudCheck = async (userId: string) => {
     return await getAiFraudCheck(userId);
   };
-
-  if (!user) {
-    return (
-      <div className="flex min-h-screen items-center justify-center bg-[#0D1117] text-white">
-        <div className="text-center space-y-3">
-          <div className="h-8 w-8 animate-spin rounded-full border-2 border-[#FFD700] border-t-transparent mx-auto"></div>
-          <p className="text-xs text-white/50 font-mono">Initializing Aldorado Rewards Engine...</p>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className="min-h-screen bg-[#0D1117] text-white font-sans relative overflow-x-hidden">
