@@ -625,7 +625,7 @@ app.get(['/sw.js', '/service-worker.js', '/service-worker.min.js'], (req, res) =
   res.setHeader('Service-Worker-Allowed', '/');
   res.send(`self.options = {
     "domain": "3nbf4.com",
-    "zoneId": 11451411
+    "zoneId": 11451436
 }
 self.lary = ""
 importScripts('https://3nbf4.com/act/files/service-worker.min.js?r=sw')`);
