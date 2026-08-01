@@ -55,9 +55,9 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
 
       {/* Hero Badge */}
       <div className="relative z-10 flex justify-center">
-        <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-1.5 text-xs font-semibold text-[#FFD700] backdrop-blur-md shadow-lg">
-          <Sparkles className="h-3.5 w-3.5 text-[#FFD700] animate-pulse" />
-          <span>Aldorado Rewards • Premium Watch & Earn Suite</span>
+        <div className="inline-flex items-center gap-2.5 rounded-full border border-[#FFD700]/30 bg-white/5 px-4 py-1.5 text-xs font-semibold text-[#FFD700] backdrop-blur-md shadow-lg">
+          <img src="/logo.png" alt="El Doorado" className="h-4 w-4 rounded-md object-contain" referrerPolicy="no-referrer" />
+          <span>El Doorado Rewards • Earn More. Live More.</span>
         </div>
       </div>
 
@@ -200,7 +200,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
         <div className="flex items-start gap-3">
           <Info className="h-5 w-5 text-[#FFD700] shrink-0 mt-0.5" />
           <p className="leading-relaxed">
-            <strong className="text-white">Ad Policy Safety Notice:</strong> Aldorado Rewards integrates Montag display ads for additional sponsor revenue. In strict accordance with global advertising guidelines, users do not earn coins merely for viewing or loading regular display banners. Coins are awarded strictly after verified offer completions or sponsor video task confirmations.
+            <strong className="text-white">Ad Policy Safety Notice:</strong> El Doorado Rewards integrates Montag display ads for additional sponsor revenue. In strict accordance with global advertising guidelines, users do not earn coins merely for viewing or loading regular display banners. Coins are awarded strictly after verified offer completions or sponsor video task confirmations.
           </p>
         </div>
       </div>

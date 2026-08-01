@@ -53,14 +53,20 @@ export const Navbar: React.FC<NavbarProps> = ({
 
             <div 
               onClick={() => onNavigate('dashboard')}
-              className="flex cursor-pointer items-center gap-2.5"
+              className="flex cursor-pointer items-center gap-2.5 group"
             >
-              <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#FFD700] text-[#0D1117] font-bold text-sm shadow-[0_0_12px_rgba(255,215,0,0.4)]">
-                A
-              </div>
-              <div className="flex items-center gap-1 text-base font-bold tracking-tight">
-                <span className="text-white">Aldorado</span>
-                <span className="text-[#FFD700]">Rewards</span>
+              <img 
+                src="/logo.png" 
+                alt="El Doorado Logo" 
+                referrerPolicy="no-referrer"
+                className="h-9 w-9 rounded-xl object-contain bg-[#0D1117] p-0.5 border border-[#FFD700]/40 shadow-[0_0_12px_rgba(255,215,0,0.3)] group-hover:scale-105 transition-transform" 
+              />
+              <div className="flex flex-col leading-tight">
+                <div className="flex items-center gap-1 text-base font-bold tracking-tight">
+                  <span className="text-white">EL</span>
+                  <span className="text-[#FFD700]">DOORADO</span>
+                </div>
+                <span className="text-[9px] font-mono tracking-widest text-white/50 uppercase">EARN MORE. LIVE MORE.</span>
               </div>
             </div>
           </div>
@@ -123,12 +129,18 @@ export const Navbar: React.FC<NavbarProps> = ({
               {/* Drawer Top Header: Brand Logo + Close Button */}
               <div className="flex items-center justify-between pb-5 border-b border-white/10">
                 <div className="flex items-center gap-2.5">
-                  <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#FFD700] text-[#0D1117] font-bold text-sm shadow-[0_0_10px_rgba(255,215,0,0.4)]">
-                    A
-                  </div>
-                  <div className="flex items-center gap-1 text-base font-bold">
-                    <span className="text-white">Aldorado</span>
-                    <span className="text-[#FFD700]">Rewards</span>
+                  <img 
+                    src="/logo.png" 
+                    alt="El Doorado Logo" 
+                    referrerPolicy="no-referrer"
+                    className="h-9 w-9 rounded-xl object-contain bg-[#0D1117] p-0.5 border border-[#FFD700]/40 shadow-[0_0_10px_rgba(255,215,0,0.3)]" 
+                  />
+                  <div className="flex flex-col leading-tight">
+                    <div className="flex items-center gap-1 text-base font-bold">
+                      <span className="text-white">EL</span>
+                      <span className="text-[#FFD700]">DOORADO</span>
+                    </div>
+                    <span className="text-[8px] font-mono tracking-widest text-white/50 uppercase">EARN MORE. LIVE MORE.</span>
                   </div>
                 </div>
 

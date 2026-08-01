@@ -1,0 +1,489 @@
+{
+  "users": [
+    {
+      "id": "usr-admin-1",
+      "name": "Admin Rolex",
+      "email": "rolex80805@gmail.com",
+      "avatar": "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&w=120&q=80",
+      "coins": 1028449,
+      "usdValue": 1028.45,
+      "role": "admin",
+      "level": 99,
+      "xp": 99999,
+      "nextLevelXp": 100000,
+      "streakDays": 30,
+      "referralCode": "ADMIN-ROLEX",
+      "referralCount": 150,
+      "referralEarnings": 250000,
+      "emailVerified": true,
+      "createdAt": "2025-01-01",
+      "fraudRiskScore": "low",
+      "totalEarned": 28400
+    },
+    {
+      "id": "usr-admin-2",
+      "name": "Admin Malik",
+      "email": "mr.malik8805@gmail.com",
+      "avatar": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=120&q=80",
+      "coins": 999999,
+      "usdValue": 999.99,
+      "role": "admin",
+      "level": 99,
+      "xp": 99999,
+      "nextLevelXp": 100000,
+      "streakDays": 30,
+      "referralCode": "ADMIN-MALIK",
+      "referralCount": 120,
+      "referralEarnings": 200000,
+      "emailVerified": true,
+      "createdAt": "2025-01-01",
+      "fraudRiskScore": "low"
+    }
+  ],
+  "offers": [
+    {
+      "id": "off-1",
+      "title": "Reach City Hall Level 10 in Clash of Empires",
+      "provider": "AdGate Media",
+      "description": "Download Clash of Empires and reach City Hall level 10 within 14 days of installation.",
+      "category": "gaming",
+      "rewardCoins": 15000,
+      "usdReward": 15,
+      "estimatedMinutes": 45,
+      "difficulty": "medium",
+      "logoUrl": "https://images.unsplash.com/photo-1538481199705-c710c4e965fc?auto=format&fit=crop&w=120&q=80",
+      "badge": "HOT",
+      "instructions": [
+        "Click \"Start Task\" and download the app via the official store link.",
+        "Open the app and complete the tutorial.",
+        "Upgrade your City Hall to Level 10.",
+        "Server webhook automatically verifies your progress and credits 15,000 coins!"
+      ],
+      "requirements": "New mobile users only. Must enable app tracking.",
+      "isPopular": true,
+      "isFeatured": true,
+      "completionsCount": 1425
+    },
+    {
+      "id": "off-2",
+      "title": "Complete Consumer Habits Tech Survey",
+      "provider": "BitLabs Surveys",
+      "description": "Share your opinion on consumer gadgets, subscription services, and AI tools.",
+      "category": "surveys",
+      "rewardCoins": 3200,
+      "usdReward": 3.2,
+      "estimatedMinutes": 12,
+      "difficulty": "easy",
+      "logoUrl": "https://images.unsplash.com/photo-1551836022-d5d88e9218df?auto=format&fit=crop&w=120&q=80",
+      "badge": "QUICK",
+      "instructions": [
+        "Answer honest screening questions.",
+        "Complete the full 12-minute survey.",
+        "Submit your feedback to get verified automatically."
+      ],
+      "requirements": "Age 18+. Valid email address.",
+      "isPopular": true,
+      "isFeatured": false,
+      "completionsCount": 3890
+    },
+    {
+      "id": "off-3",
+      "title": "Register & Deposit on CryptoX Exchange",
+      "provider": "OfferToro",
+      "description": "Create an account on CryptoX, verify KYC, and make a minimum first deposit of $10.",
+      "category": "finance",
+      "rewardCoins": 45000,
+      "usdReward": 45,
+      "estimatedMinutes": 20,
+      "difficulty": "hard",
+      "logoUrl": "https://images.unsplash.com/photo-1621416894569-0f39ed31d247?auto=format&fit=crop&w=120&q=80",
+      "badge": "HIGH PAYOUT",
+      "instructions": [
+        "Register a new CryptoX trading account via link.",
+        "Complete identity check.",
+        "Deposit $10 minimum.",
+        "Webhook credits 45,000 coins within 15 minutes of deposit!"
+      ],
+      "requirements": "New users only. KYC verification required.",
+      "isPopular": true,
+      "isFeatured": true,
+      "completionsCount": 650
+    },
+    {
+      "id": "off-4",
+      "title": "Install & Try Nord Security Shield",
+      "provider": "CPALead",
+      "description": "Download the security app, start a 7-day free trial, and keep it active for 24 hours.",
+      "category": "mobile",
+      "rewardCoins": 8500,
+      "usdReward": 8.5,
+      "estimatedMinutes": 5,
+      "difficulty": "easy",
+      "logoUrl": "https://images.unsplash.com/photo-1563986768609-322da13575f3?auto=format&fit=crop&w=120&q=80",
+      "badge": "TOP RATED",
+      "instructions": [
+        "Install Nord Security Shield from Google Play / App Store.",
+        "Start free trial.",
+        "Keep installed for at least 24 hours."
+      ],
+      "requirements": "Valid payment method for trial verification.",
+      "isPopular": false,
+      "isFeatured": false,
+      "completionsCount": 2100
+    },
+    {
+      "id": "off-5",
+      "title": "Watch Sponsored Montag Product Spotlights (5 Videos)",
+      "provider": "Montag Verified Tasks",
+      "description": "Watch 5 interactive video spotlights from verified Montag sponsor campaigns with end-of-video quiz.",
+      "category": "quick",
+      "rewardCoins": 1200,
+      "usdReward": 1.2,
+      "estimatedMinutes": 8,
+      "difficulty": "easy",
+      "logoUrl": "https://images.unsplash.com/photo-1579202673506-ca3ce28943ef?auto=format&fit=crop&w=120&q=80",
+      "badge": "VERIFIED AD",
+      "instructions": [
+        "Watch 5 consecutive sponsored video spotlights.",
+        "Answer 1 simple verification quiz question at the end.",
+        "Get verified by Montag webhook to receive your 1,200 coins!"
+      ],
+      "requirements": "No ad-blockers allowed.",
+      "isPopular": true,
+      "isFeatured": true,
+      "completionsCount": 8901
+    },
+    {
+      "id": "off-6",
+      "title": "Sign Up for FinTech Budget Planner",
+      "provider": "RevenueWall",
+      "description": "Create a free account on SmartBudget and link one trackable expense account.",
+      "category": "desktop",
+      "rewardCoins": 5000,
+      "usdReward": 5,
+      "estimatedMinutes": 10,
+      "difficulty": "medium",
+      "logoUrl": "https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?auto=format&fit=crop&w=120&q=80",
+      "badge": "NEW",
+      "instructions": [
+        "Register free account.",
+        "Verify your email.",
+        "Complete onboarding tour."
+      ],
+      "requirements": "Desktop browser or mobile Web.",
+      "isPopular": false,
+      "isFeatured": false,
+      "completionsCount": 1120
+    }
+  ],
+  "completions": [
+    {
+      "id": "wh-cpx_live_test_777",
+      "userId": "usr-admin-1",
+      "userName": "Admin Rolex",
+      "offerId": "off-1",
+      "offerTitle": "CPX Research Completed Task",
+      "provider": "cpx_research",
+      "rewardCoins": 5000,
+      "status": "completed",
+      "completedAt": "2026-08-01T09:30:49.597Z",
+      "verifiedVia": "webhook"
+    },
+    {
+      "id": "wh-tx-1785576623281",
+      "userId": "usr-admin-1",
+      "userName": "Admin Rolex",
+      "offerId": "off-1",
+      "offerTitle": "CPX Research Completed Task",
+      "provider": "BitLabs Surveys",
+      "rewardCoins": 3200,
+      "status": "completed",
+      "completedAt": "2026-08-01T09:30:23.281Z",
+      "verifiedVia": "webhook"
+    },
+    {
+      "id": "wh-test_cpx_1002",
+      "userId": "usr-admin-1",
+      "userName": "Admin Rolex",
+      "offerId": "off-1",
+      "offerTitle": "CPX Research Completed Task",
+      "provider": "cpx_research",
+      "rewardCoins": 1500,
+      "status": "completed",
+      "completedAt": "2026-08-01T09:29:46.246Z",
+      "verifiedVia": "webhook"
+    },
+    {
+      "id": "wh-test_cpx_1001",
+      "userId": "usr-admin-1",
+      "userName": "Admin Rolex",
+      "offerId": "off-1",
+      "offerTitle": "CPX Research Completed Task",
+      "provider": "cpx_research",
+      "rewardCoins": 2500,
+      "status": "completed",
+      "completedAt": "2026-08-01T09:29:43.091Z",
+      "verifiedVia": "webhook"
+    },
+    {
+      "id": "wh-1785570729708",
+      "userId": "usr-admin-1",
+      "userName": "Admin Rolex",
+      "offerId": "off-5",
+      "offerTitle": "Watch Sponsored Montag Product Spotlights (5 Videos)",
+      "provider": "Montag Verified Tasks",
+      "rewardCoins": 1200,
+      "status": "completed",
+      "completedAt": "2026-08-01T07:52:09.708Z",
+      "verifiedVia": "webhook"
+    },
+    {
+      "id": "wh-1785570718170",
+      "userId": "usr-admin-1",
+      "userName": "Admin Rolex",
+      "offerId": "off-1",
+      "offerTitle": "Reach City Hall Level 10 in Clash of Empires",
+      "provider": "AdGate Media",
+      "rewardCoins": 15000,
+      "status": "completed",
+      "completedAt": "2026-08-01T07:51:58.170Z",
+      "verifiedVia": "webhook"
+    },
+    {
+      "id": "comp-1",
+      "userId": "usr-101",
+      "userName": "Jordan Vance",
+      "offerId": "off-5",
+      "offerTitle": "Watch Sponsored Montag Product Spotlights",
+      "provider": "Montag Verified Tasks",
+      "rewardCoins": 1200,
+      "status": "completed",
+      "completedAt": "2026-08-01T03:40:29.646Z",
+      "verifiedVia": "webhook"
+    },
+    {
+      "id": "comp-2",
+      "userId": "usr-101",
+      "userName": "Jordan Vance",
+      "offerId": "off-2",
+      "offerTitle": "Complete Consumer Habits Tech Survey",
+      "provider": "BitLabs Surveys",
+      "rewardCoins": 3200,
+      "status": "completed",
+      "completedAt": "2026-07-31T03:40:29.646Z",
+      "verifiedVia": "server_callback"
+    }
+  ],
+  "paymentMethods": [
+    {
+      "id": "pm-usdt",
+      "name": "Tether USDT (TRC-20 / BEP-20)",
+      "type": "crypto",
+      "icon": "Coins",
+      "minWithdrawalCoins": 5000,
+      "feePercentage": 0,
+      "description": "Instant crypto payout directly to your Binance, Trust Wallet, or Web3 address.",
+      "requiredFields": [
+        "USDT Wallet Address",
+        "Network (TRC20 or BEP20)"
+      ],
+      "enabled": true
+    },
+    {
+      "id": "pm-paypal",
+      "name": "PayPal Instant Transfer",
+      "type": "paypal",
+      "icon": "Wallet",
+      "minWithdrawalCoins": 10000,
+      "feePercentage": 2.5,
+      "description": "Direct PayPal balance transfer in USD, EUR, or GBP.",
+      "requiredFields": [
+        "PayPal Account Email"
+      ],
+      "enabled": true
+    },
+    {
+      "id": "pm-amazon",
+      "name": "Amazon Digital Gift Card",
+      "type": "giftcard",
+      "icon": "Gift",
+      "minWithdrawalCoins": 5000,
+      "feePercentage": 0,
+      "description": "E-gift card code sent to your registered email address.",
+      "requiredFields": [
+        "Recipient Email",
+        "Preferred Currency (USD/EUR/GBP)"
+      ],
+      "enabled": true
+    },
+    {
+      "id": "pm-crypto-btc",
+      "name": "Bitcoin (BTC)",
+      "type": "crypto",
+      "icon": "Bitcoin",
+      "minWithdrawalCoins": 25000,
+      "feePercentage": 1,
+      "description": "Direct Bitcoin blockchain payout.",
+      "requiredFields": [
+        "Bitcoin BTC Address"
+      ],
+      "enabled": true
+    },
+    {
+      "id": "pm-bank",
+      "name": "Global Wire / Wise Transfer",
+      "type": "bank",
+      "icon": "Building2",
+      "minWithdrawalCoins": 50000,
+      "feePercentage": 1.5,
+      "description": "Direct bank transfer via Swift/Wise to 80+ countries.",
+      "requiredFields": [
+        "Bank Account Name",
+        "IBAN / Account Number",
+        "BIC/SWIFT Code"
+      ],
+      "enabled": true
+    }
+  ],
+  "withdrawals": [
+    {
+      "id": "wd-101",
+      "userId": "usr-101",
+      "userName": "Jordan Vance",
+      "userEmail": "jordan@aldorado.com",
+      "methodId": "pm-usdt",
+      "methodName": "Tether USDT (TRC-20 / BEP-20)",
+      "accountDetails": {
+        "USDT Wallet Address": "TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t",
+        "Network": "TRC20"
+      },
+      "coins": 10000,
+      "usdAmount": 10,
+      "feeCoins": 0,
+      "netCoins": 10000,
+      "status": "approved",
+      "requestedAt": "2026-07-30T07:40:29.646Z",
+      "processedAt": "2026-07-30T12:28:29.646Z",
+      "adminNote": "Processed via Automated TRC20 Gateway"
+    }
+  ],
+  "leaderboard": [
+    {
+      "rank": 1,
+      "userId": "user-top-1",
+      "name": "Alexander Vault",
+      "avatar": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=120&q=80",
+      "coinsEarned": 482500,
+      "offersCompleted": 142,
+      "referrals": 89,
+      "badge": "Diamond Master"
+    },
+    {
+      "rank": 2,
+      "userId": "user-top-2",
+      "name": "Sophia Chen",
+      "avatar": "https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=120&q=80",
+      "coinsEarned": 395000,
+      "offersCompleted": 118,
+      "referrals": 64,
+      "badge": "Platinum Crown"
+    },
+    {
+      "rank": 3,
+      "userId": "user-top-3",
+      "name": "Marcus Sterling",
+      "avatar": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=120&q=80",
+      "coinsEarned": 320400,
+      "offersCompleted": 96,
+      "referrals": 52,
+      "badge": "Gold Elite"
+    },
+    {
+      "rank": 4,
+      "userId": "user-top-4",
+      "name": "Elena Rostova",
+      "avatar": "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=120&q=80",
+      "coinsEarned": 275000,
+      "offersCompleted": 84,
+      "referrals": 41
+    },
+    {
+      "rank": 5,
+      "userId": "user-top-5",
+      "name": "David Miller",
+      "avatar": "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=120&q=80",
+      "coinsEarned": 210900,
+      "offersCompleted": 73,
+      "referrals": 28
+    }
+  ],
+  "achievements": [
+    {
+      "id": "ach-1",
+      "title": "First Step to Fortune",
+      "description": "Complete your first verified offer task.",
+      "icon": "Award",
+      "progress": 1,
+      "maxProgress": 1,
+      "completed": true,
+      "rewardCoins": 500
+    },
+    {
+      "id": "ach-2",
+      "title": "Streak Titan",
+      "description": "Maintain a 7-day login & bonus claim streak.",
+      "icon": "Zap",
+      "progress": 5,
+      "maxProgress": 7,
+      "completed": false,
+      "rewardCoins": 2500
+    },
+    {
+      "id": "ach-3",
+      "title": "Referral Ambassador",
+      "description": "Invite 5 active friends who complete at least 1 offer.",
+      "icon": "Users",
+      "progress": 3,
+      "maxProgress": 5,
+      "completed": false,
+      "rewardCoins": 5000
+    },
+    {
+      "id": "ach-4",
+      "title": "Gold Collector",
+      "description": "Accumulate a total of 100,000 coins earned.",
+      "icon": "Crown",
+      "progress": 18450,
+      "maxProgress": 100000,
+      "completed": false,
+      "rewardCoins": 10000
+    }
+  ],
+  "announcements": [
+    {
+      "id": "ann-1",
+      "title": "🚀 Montag Verified Video Tasks 2x Bonus Active!",
+      "content": "Earn double coin rewards on all Montag sponsor video tasks completed this week!",
+      "type": "success",
+      "createdAt": "2 hours ago"
+    },
+    {
+      "id": "ann-2",
+      "title": "⚡ Instant USDT & PayPal Payout System Upgraded",
+      "content": "All verified crypto & PayPal withdrawal requests are now processed automatically within 10 minutes!",
+      "type": "info",
+      "createdAt": "1 day ago"
+    }
+  ],
+  "stats": {
+    "totalUsers": 148920,
+    "totalCoinsPaid": 348920000,
+    "totalUsdPaid": 348920,
+    "offersCompletedCount": 924150,
+    "withdrawalsProcessedCount": 42180,
+    "monthlyRevenueUsd": 84500,
+    "monthlyAdRevenueUsd": 21800,
+    "monthlyPayoutsUsd": 49200,
+    "netProfitUsd": 35300
+  }
+}

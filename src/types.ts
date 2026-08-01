@@ -32,6 +32,7 @@ export interface User {
   emailVerified: boolean;
   createdAt: string;
   fraudRiskScore?: 'low' | 'medium' | 'high';
+  banned?: boolean;
 }
 
 export type OfferCategory = 'all' | 'gaming' | 'surveys' | 'mobile' | 'desktop' | 'finance' | 'quick';

@@ -26,16 +26,15 @@ import {
   LeaderboardEntry,
   Achievement,
   PlatformStats,
-  ADMIN_EMAILS,
   isAdminEmail
 } from './types';
 
 import {
+  loginWithEmail,
   getUserProfile,
   switchUserRole,
   claimDailyBonus,
   getOffers,
-  completeOffer,
   simulateWebhook,
   getPaymentMethods,
   savePaymentMethod,
@@ -48,31 +47,31 @@ import {
   getAiFraudCheck
 } from './services/api';
 
-const DEFAULT_USER: User = {
-  id: 'usr-101',
-  name: 'Jordan Vance',
-  email: 'jordan@aldorado.com',
+const EMPTY_USER: User = {
+  id: '',
+  name: 'Member',
+  email: '',
   avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=120&q=80',
-  coins: 18450,
-  usdValue: 18.45,
-  totalEarned: 42100,
+  coins: 0,
+  usdValue: 0.00,
+  totalEarned: 0,
   role: 'user',
-  level: 4,
-  xp: 3200,
-  nextLevelXp: 5000,
-  streakDays: 5,
-  referralCode: 'JORDAN-992',
-  referralCount: 12,
-  referralEarnings: 4500,
+  level: 1,
+  xp: 0,
+  nextLevelXp: 1000,
+  streakDays: 0,
+  referralCode: '',
+  referralCount: 0,
+  referralEarnings: 0,
   emailVerified: true,
-  createdAt: '2025-01-15',
+  createdAt: new Date().toISOString().split('T')[0],
   fraudRiskScore: 'low'
 };
 
 export default function App() {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
   const [activeTab, setActiveTab] = useState<string>('dashboard');
-  const [user, setUser] = useState<User>(DEFAULT_USER);
+  const [user, setUser] = useState<User>(EMPTY_USER);
   const [offers, setOffers] = useState<Offer[]>([]);
   const [completions, setCompletions] = useState<OfferCompletion[]>([]);
   const [paymentMethods, setPaymentMethods] = useState<PaymentMethod[]>([]);
@@ -80,172 +79,119 @@ export default function App() {
   const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>([]);
   const [achievements, setAchievements] = useState<Achievement[]>([]);
   const [stats, setStats] = useState<PlatformStats>({
-    totalUsers: 148920,
-    totalCoinsPaid: 348920000,
-    totalUsdPaid: 348920.00,
-    offersCompletedCount: 924150,
-    withdrawalsProcessedCount: 42180,
-    monthlyRevenueUsd: 84500.00,
-    monthlyAdRevenueUsd: 21800.00,
-    monthlyPayoutsUsd: 49200.00,
-    netProfitUsd: 35300.00
+    totalUsers: 0,
+    totalCoinsPaid: 0,
+    totalUsdPaid: 0,
+    offersCompletedCount: 0,
+    withdrawalsProcessedCount: 0,
+    monthlyRevenueUsd: 0,
+    monthlyAdRevenueUsd: 0,
+    monthlyPayoutsUsd: 0,
+    netProfitUsd: 0
   });
 
   const [selectedOfferModal, setSelectedOfferModal] = useState<Offer | null>(null);
   const [isAuthOpen, setIsAuthOpen] = useState(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
-  // Load Initial Data
-  const loadInitialData = async () => {
-    try {
-      const { user: userData, achievements: achs } = await getUserProfile('usr-101');
-      if (userData) setUser(userData);
-      if (achs) setAchievements(achs);
-    } catch (err) {
-      console.warn('Backend API profile load fallback:', err);
-    }
+  const showToast = (msg: string) => {
+    setToastMessage(msg);
+    setTimeout(() => setToastMessage(null), 3500);
+  };
 
+  // Load General Platform Catalog Data
+  const loadCatalogData = async () => {
     try {
       const { offers: offersData } = await getOffers();
       if (offersData) setOffers(offersData);
     } catch (err) {
-      console.warn('Backend API offers load fallback:', err);
+      console.warn('Offers load fallback:', err);
     }
 
     try {
       const { methods } = await getPaymentMethods();
       if (methods) setPaymentMethods(methods);
     } catch (err) {
-      console.warn('Backend API payment methods fallback:', err);
-    }
-
-    try {
-      const { withdrawals: userWds } = await getUserWithdrawals('usr-101');
-      if (userWds) setWithdrawals(userWds);
-    } catch (err) {
-      console.warn('Backend API withdrawals fallback:', err);
+      console.warn('Payment methods fallback:', err);
     }
 
     try {
       const { leaderboard: lb } = await getLeaderboard();
       if (lb) setLeaderboard(lb);
     } catch (err) {
-      console.warn('Backend API leaderboard fallback:', err);
+      console.warn('Leaderboard fallback:', err);
     }
 
     try {
       const { stats: adminStats } = await getAdminWithdrawals();
       if (adminStats) setStats(adminStats);
     } catch (err) {
-      console.warn('Backend API stats fallback:', err);
+      console.warn('Stats fallback:', err);
     }
   };
 
-  useEffect(() => {
-    loadInitialData();
-  }, []);
+  // Load User Specific Account Data
+  const loadUserData = async (userId: string) => {
+    try {
+      const { user: userData, achievements: achs } = await getUserProfile(userId);
+      if (userData) setUser(userData);
+      if (achs) setAchievements(achs);
 
-  const showToast = (msg: string) => {
-    setToastMessage(msg);
-    setTimeout(() => setToastMessage(null), 3500);
+      const { withdrawals: userWds } = await getUserWithdrawals(userData?.id || userId);
+      if (userWds) setWithdrawals(userWds);
+    } catch (err) {
+      console.warn('User data load error:', err);
+    }
   };
 
-  // Login Handler with Email Verification
+  // Login Handler with Database Integration
   const handleLoginWithEmail = async (emailInput: string) => {
     const cleanEmail = emailInput.trim();
-    const isAdmin = isAdminEmail(cleanEmail);
-    const assignedRole = isAdmin ? 'admin' : 'user';
-
-    let loggedInUser: User;
-    if (cleanEmail === 'rolex80805@gmail.com') {
-      loggedInUser = {
-        id: 'usr-admin-1',
-        name: 'Admin Rolex',
-        email: 'rolex80805@gmail.com',
-        avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&w=120&q=80',
-        coins: 999999,
-        usdValue: 999.99,
-        role: 'admin',
-        level: 99,
-        xp: 99999,
-        nextLevelXp: 100000,
-        streakDays: 30,
-        referralCode: 'ADMIN-ROLEX',
-        referralCount: 150,
-        referralEarnings: 250000,
-        emailVerified: true,
-        createdAt: '2025-01-01',
-        fraudRiskScore: 'low'
-      };
-    } else if (cleanEmail === 'mr.malik8805@gmail.com') {
-      loggedInUser = {
-        id: 'usr-admin-2',
-        name: 'Admin Malik',
-        email: 'mr.malik8805@gmail.com',
-        avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=120&q=80',
-        coins: 999999,
-        usdValue: 999.99,
-        role: 'admin',
-        level: 99,
-        xp: 99999,
-        nextLevelXp: 100000,
-        streakDays: 30,
-        referralCode: 'ADMIN-MALIK',
-        referralCount: 120,
-        referralEarnings: 200000,
-        emailVerified: true,
-        createdAt: '2025-01-01',
-        fraudRiskScore: 'low'
-      };
-    } else {
-      loggedInUser = {
-        id: user?.id || 'usr-101',
-        name: cleanEmail.split('@')[0] || 'Member',
-        email: cleanEmail,
-        avatar: user?.avatar || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=120&q=80',
-        coins: user?.coins || 18450,
-        usdValue: user?.usdValue || 18.45,
-        role: 'user',
-        level: user?.level || 4,
-        xp: user?.xp || 3200,
-        nextLevelXp: user?.nextLevelXp || 5000,
-        streakDays: user?.streakDays || 5,
-        referralCode: 'MEMBER-CODE',
-        referralCount: 3,
-        referralEarnings: 4500,
-        emailVerified: true,
-        createdAt: new Date().toISOString().split('T')[0],
-        fraudRiskScore: 'low'
-      };
-    }
-
-    setUser(loggedInUser);
-    setIsAuthenticated(true);
-    setActiveTab(isAdmin ? 'admin' : 'dashboard');
+    if (!cleanEmail) return;
 
     try {
-      await switchUserRole(loggedInUser.id, assignedRole);
-    } catch (e) {
-      // Ignore fallback
-    }
+      const res = await loginWithEmail(cleanEmail);
+      if (res.user) {
+        setUser(res.user);
+        setIsAuthenticated(true);
+        localStorage.setItem('aldorado_user_email', cleanEmail);
+        setActiveTab(res.user.role === 'admin' ? 'admin' : 'dashboard');
 
-    showToast(
-      isAdmin
-        ? `Welcome Administrator! Signed in as ${loggedInUser.name} (${cleanEmail}). Admin Panel unlocked.`
-        : `Signed in as ${loggedInUser.name} (${cleanEmail}).`
-    );
+        await loadUserData(res.user.id);
+        await loadCatalogData();
+
+        showToast(
+          res.user.role === 'admin'
+            ? `Welcome Administrator! Signed in as ${res.user.name} (${cleanEmail}). Admin Panel unlocked.`
+            : `Welcome back, ${res.user.name} (${cleanEmail})!`
+        );
+      }
+    } catch (err: any) {
+      showToast(err.message || 'Login failed. Please try again.');
+    }
   };
+
+  // Auto Login on Mount if session exists
+  useEffect(() => {
+    loadCatalogData();
+    const savedEmail = localStorage.getItem('aldorado_user_email');
+    if (savedEmail) {
+      handleLoginWithEmail(savedEmail);
+    }
+  }, []);
 
   // Logout Handler
   const handleLogout = () => {
+    localStorage.removeItem('aldorado_user_email');
     setIsAuthenticated(false);
+    setUser(EMPTY_USER);
     setActiveTab('dashboard');
     showToast('Signed out securely.');
   };
 
   // Switch Role
   const handleSwitchRole = async (role: 'user' | 'admin') => {
-    if (!user) return;
+    if (!user || !user.id) return;
     if (role === 'admin' && !isAdminEmail(user.email)) {
       showToast('Admin access restricted to authorized emails (rolex80805@gmail.com & mr.malik8805@gmail.com).');
       return;
@@ -262,11 +208,13 @@ export default function App() {
 
   // Claim Daily Bonus
   const handleClaimDailyBonus = async () => {
-    if (!user) return;
+    if (!user || !user.id) return;
     try {
       const res = await claimDailyBonus(user.id);
       setUser(res.user);
       showToast(res.message);
+      await loadUserData(user.id);
+      await loadCatalogData();
     } catch (err: any) {
       showToast(err.message || 'Already claimed today!');
     }
@@ -274,17 +222,21 @@ export default function App() {
 
   // Offer Completion & Webhook Simulation
   const handleSimulateWebhook = async (offerId: string, provider: string, coins?: number) => {
-    if (!user) return;
+    if (!user || !user.id) return;
     try {
       const res = await simulateWebhook(provider, offerId, user.id, coins);
-      const { user: updatedUser } = await getUserProfile(user.id);
-      setUser(updatedUser);
-
-      const { withdrawals: updatedWds } = await getUserWithdrawals(user.id);
-      setWithdrawals(updatedWds);
+      setUser(prev => ({
+        ...prev,
+        coins: prev.coins + (coins || res.completion.rewardCoins),
+        totalEarned: (prev.totalEarned || 0) + (coins || res.completion.rewardCoins),
+        usdValue: +((prev.coins + (coins || res.completion.rewardCoins)) / 1000).toFixed(2)
+      }));
 
       setCompletions(prev => [res.completion, ...prev]);
-      showToast(`Verified Webhook Received! +${(coins || 1000).toLocaleString()} Coins Credited.`);
+      await loadUserData(user.id);
+      await loadCatalogData();
+
+      showToast(`Verified Webhook Received! +${(coins || res.completion.rewardCoins).toLocaleString()} Coins Credited.`);
     } catch (err: any) {
       showToast(err.message || 'Webhook verification failed.');
     }
@@ -296,11 +248,12 @@ export default function App() {
     accountDetails: Record<string, string>,
     coins: number
   ) => {
-    if (!user) return;
+    if (!user || !user.id) return;
     const res = await requestWithdrawal(user.id, methodId, accountDetails, coins);
     setUser(res.user);
     const { withdrawals: updatedWds } = await getUserWithdrawals(user.id);
     setWithdrawals(updatedWds);
+    await loadCatalogData();
     showToast(res.message);
   };
 
@@ -314,9 +267,8 @@ export default function App() {
     const { withdrawals: allWds, stats: newStats } = await getAdminWithdrawals();
     setWithdrawals(allWds);
     setStats(newStats);
-    if (user) {
-      const { user: updatedUser } = await getUserProfile(user.id);
-      setUser(updatedUser);
+    if (user && user.id) {
+      await loadUserData(user.id);
     }
     showToast(res.message);
   };
@@ -340,10 +292,9 @@ export default function App() {
   return (
     <div className="min-h-screen bg-[#0D1117] text-white font-sans relative overflow-x-hidden">
       
-      {/* Decorative Frosted Glass Radial Ambient Glows */}
+      {/* Decorative Ambient Glows */}
       <div className="fixed top-[-100px] left-[-100px] h-[500px] w-[500px] rounded-full bg-[#FFD700] opacity-10 blur-[150px] pointer-events-none z-0"></div>
       <div className="fixed bottom-[-100px] right-[-100px] h-[500px] w-[500px] rounded-full bg-[#FFD700] opacity-10 blur-[150px] pointer-events-none z-0"></div>
-      <div className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-[600px] w-[600px] rounded-full bg-[#FFD700] opacity-5 blur-[180px] pointer-events-none z-0"></div>
 
       {/* Top Navbar */}
       <Navbar
@@ -396,6 +347,7 @@ export default function App() {
 
               {activeTab === 'offers' && (
                 <OffersView
+                  user={user}
                   offers={offers}
                   onCompleteOffer={() => {}}
                   onSimulateWebhook={handleSimulateWebhook}
@@ -446,6 +398,7 @@ export default function App() {
                   onProcessWithdrawal={handleProcessAdminWithdrawal}
                   onSavePaymentMethod={handleSavePaymentMethod}
                   onSaveOffer={handleSaveOffer}
+                  onRefreshOffers={loadCatalogData}
                   onRunFraudCheck={handleRunFraudCheck}
                   currentUserEmail={user.email}
                 />

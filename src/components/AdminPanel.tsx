@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Shield,
   DollarSign,
@@ -12,10 +12,14 @@ import {
   Building2,
   Lock,
   Edit2,
-  Megaphone
+  Trash2,
+  UserCheck,
+  UserX,
+  Users
 } from 'lucide-react';
 import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
-import { PlatformStats, WithdrawalRequest, PaymentMethod, Offer, isAdminEmail, ADMIN_EMAILS } from '../types';
+import { PlatformStats, WithdrawalRequest, PaymentMethod, Offer, User, isAdminEmail, ADMIN_EMAILS } from '../types';
+import { getAdminUsers, adjustAdminUser, toggleAdminUserBan, deleteAdminOffer } from '../services/api';
 
 interface AdminPanelProps {
   stats: PlatformStats;
@@ -25,6 +29,7 @@ interface AdminPanelProps {
   onProcessWithdrawal: (id: string, status: 'approved' | 'rejected', note?: string) => Promise<void>;
   onSavePaymentMethod: (method: PaymentMethod) => Promise<void>;
   onSaveOffer: (offer: Offer) => Promise<void>;
+  onRefreshOffers?: () => Promise<void>;
   onRunFraudCheck: (userId: string) => Promise<void>;
   currentUserEmail?: string;
 }
@@ -37,12 +42,20 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
   onProcessWithdrawal,
   onSavePaymentMethod,
   onSaveOffer,
+  onRefreshOffers,
   onRunFraudCheck,
   currentUserEmail
 }) => {
-  const [activeTab, setActiveTab] = useState<'withdrawals' | 'methods' | 'offers' | 'analytics' | 'fraud'>('withdrawals');
+  const [activeTab, setActiveTab] = useState<'withdrawals' | 'users' | 'methods' | 'offers' | 'analytics' | 'fraud'>('withdrawals');
   const [processingId, setProcessingId] = useState<string | null>(null);
   const [adminNote, setAdminNote] = useState<Record<string, string>>({});
+  
+  // User Management state
+  const [usersList, setUsersList] = useState<User[]>([]);
+  const [loadingUsers, setLoadingUsers] = useState(false);
+  const [selectedUserToEdit, setSelectedUserToEdit] = useState<User | null>(null);
+  const [coinsAdjustment, setCoinsAdjustment] = useState<number>(1000);
+  const [streakAdjustment, setStreakAdjustment] = useState<number>(1);
 
   // Security Authorization Check
   if (!currentUserEmail || !isAdminEmail(currentUserEmail)) {
@@ -68,6 +81,25 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
     );
   }
 
+  // Load Admin Users List
+  const fetchUsers = async () => {
+    try {
+      setLoadingUsers(true);
+      const { users } = await getAdminUsers();
+      if (users) setUsersList(users);
+    } catch (err) {
+      console.warn('Failed to load users list:', err);
+    } finally {
+      setLoadingUsers(false);
+    }
+  };
+
+  useEffect(() => {
+    if (activeTab === 'users') {
+      fetchUsers();
+    }
+  }, [activeTab]);
+
   // Payment Method Form State
   const [showMethodModal, setShowMethodModal] = useState(false);
   const [methodForm, setMethodForm] = useState<Partial<PaymentMethod>>({
@@ -80,6 +112,25 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
     enabled: true
   });
 
+  // Offer Form State
+  const [showOfferModal, setShowOfferModal] = useState(false);
+  const [offerForm, setOfferForm] = useState<Partial<Offer>>({
+    title: '',
+    provider: 'AdGate Media',
+    description: '',
+    category: 'gaming',
+    rewardCoins: 5000,
+    usdReward: 5.00,
+    estimatedMinutes: 15,
+    difficulty: 'medium',
+    logoUrl: 'https://images.unsplash.com/photo-1538481199705-c710c4e965fc?auto=format&fit=crop&w=120&q=80',
+    badge: 'HOT',
+    instructions: ['Download app', 'Complete tutorial'],
+    requirements: 'New users only',
+    isPopular: true,
+    isFeatured: false
+  });
+
   // Fraud check output
   const [fraudOutput, setFraudOutput] = useState<any>(null);
 
@@ -87,7 +138,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
     { month: 'Jan', revenue: 42000, payouts: 28000, net: 14000 },
     { month: 'Feb', revenue: 58000, payouts: 35000, net: 23000 },
     { month: 'Mar', revenue: 69000, payouts: 41000, net: 28000 },
-    { month: 'Apr', revenue: 84500, payouts: 49200, net: 35300 },
+    { month: 'Apr', revenue: stats.monthlyRevenueUsd || 84500, payouts: stats.monthlyPayoutsUsd || 49200, net: stats.netProfitUsd || 35300 },
   ];
 
   const handleApprove = async (id: string) => {
@@ -100,6 +151,34 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
     setProcessingId(id);
     await onProcessWithdrawal(id, 'rejected', adminNote[id] || 'Rejected by Admin Security Check');
     setProcessingId(null);
+  };
+
+  const handleAdjustCoins = async (user: User, delta: number) => {
+    try {
+      await adjustAdminUser(user.id, delta);
+      await fetchUsers();
+    } catch (e) {
+      alert('Failed to adjust coins');
+    }
+  };
+
+  const handleToggleBan = async (user: User) => {
+    try {
+      await toggleAdminUserBan(user.id);
+      await fetchUsers();
+    } catch (e) {
+      alert('Failed to toggle ban status');
+    }
+  };
+
+  const handleDeleteOffer = async (offerId: string) => {
+    if (!confirm('Are you sure you want to delete this offer?')) return;
+    try {
+      await deleteAdminOffer(offerId);
+      if (onRefreshOffers) await onRefreshOffers();
+    } catch (e) {
+      alert('Failed to delete offer');
+    }
   };
 
   const handleSaveMethodSubmit = async (e: React.FormEvent) => {
@@ -121,10 +200,37 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
     setShowMethodModal(false);
   };
 
+  const handleSaveOfferSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!offerForm.title) return;
+
+    await onSaveOffer({
+      id: offerForm.id || `off-${Date.now()}`,
+      title: offerForm.title,
+      provider: offerForm.provider || 'AdGate Media',
+      description: offerForm.description || '',
+      category: offerForm.category || 'gaming',
+      rewardCoins: offerForm.rewardCoins || 5000,
+      usdReward: +( (offerForm.rewardCoins || 5000) / 1000 ).toFixed(2),
+      estimatedMinutes: offerForm.estimatedMinutes || 15,
+      difficulty: offerForm.difficulty || 'medium',
+      logoUrl: offerForm.logoUrl || 'https://images.unsplash.com/photo-1538481199705-c710c4e965fc?auto=format&fit=crop&w=120&q=80',
+      badge: offerForm.badge,
+      instructions: offerForm.instructions || ['Complete task'],
+      requirements: offerForm.requirements || 'New users only',
+      isPopular: offerForm.isPopular ?? true,
+      isFeatured: offerForm.isFeatured ?? false,
+      completionsCount: 0
+    });
+
+    if (onRefreshOffers) await onRefreshOffers();
+    setShowOfferModal(false);
+  };
+
   const handleFraudCheckClick = async () => {
     setFraudOutput({ loading: true });
     try {
-      const res = await onRunFraudCheck('usr-101');
+      const res = await onRunFraudCheck(usersList[0]?.id || 'usr-admin-1');
       setFraudOutput(res);
     } catch (e) {
       setFraudOutput({ riskScore: 'low', reasons: ['Standard activity verified.'], confidence: 95 });
@@ -143,12 +249,12 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <h2 className="text-2xl font-black text-white">Aldorado Core Admin Suite</h2>
+                <h2 className="text-2xl font-black text-white">El Doorado Core Admin Suite</h2>
                 <span className="rounded bg-purple-500/20 px-2 py-0.5 text-xs font-bold text-purple-300 border border-purple-500/30">
                   Sovereign Access
                 </span>
               </div>
-              <p className="text-xs text-gray-400 mt-0.5">Manage withdrawal processing, custom payment gateways, offerwalls, and net revenue.</p>
+              <p className="text-xs text-gray-400 mt-0.5">Manage users, withdrawal processing, custom payment gateways, offerwalls, and net revenue.</p>
             </div>
           </div>
 
@@ -168,13 +274,13 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         
         <div className="rounded-2xl border border-gray-800 bg-gray-900/80 p-4">
-          <span className="text-xs font-semibold text-gray-400">Total Offerwall Revenue</span>
-          <p className="mt-2 text-xl font-black text-white font-mono">${stats.monthlyRevenueUsd.toLocaleString()}</p>
+          <span className="text-xs font-semibold text-gray-400">Total Registered Users</span>
+          <p className="mt-2 text-xl font-black text-white font-mono">{stats.totalUsers}</p>
         </div>
 
         <div className="rounded-2xl border border-gray-800 bg-gray-900/80 p-4">
-          <span className="text-xs font-semibold text-gray-400">Montag Ad Revenue</span>
-          <p className="mt-2 text-xl font-black text-yellow-400 font-mono">${stats.monthlyAdRevenueUsd.toLocaleString()}</p>
+          <span className="text-xs font-semibold text-gray-400">Offers Completed</span>
+          <p className="mt-2 text-xl font-black text-yellow-400 font-mono">{stats.offersCompletedCount}</p>
         </div>
 
         <div className="rounded-2xl border border-gray-800 bg-gray-900/80 p-4">
@@ -190,9 +296,10 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
       </div>
 
       {/* Admin Tabs */}
-      <div className="flex items-center gap-2 border-b border-gray-800 pb-2">
+      <div className="flex items-center gap-2 border-b border-gray-800 pb-2 overflow-x-auto">
         {[
           { id: 'withdrawals', label: 'Withdrawal Approvals' },
+          { id: 'users', label: 'User Directory' },
           { id: 'methods', label: 'Payment Method Manager' },
           { id: 'offers', label: 'Offerwall Manager' },
           { id: 'analytics', label: 'Revenue Analytics' },
@@ -201,7 +308,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
           <button
             key={tab.id}
             onClick={() => setActiveTab(tab.id as any)}
-            className={`px-4 py-2 text-xs font-bold rounded-xl transition-all ${
+            className={`whitespace-nowrap px-4 py-2 text-xs font-bold rounded-xl transition-all ${
               activeTab === tab.id
                 ? 'bg-purple-600 text-white shadow-lg shadow-purple-600/30'
                 : 'bg-gray-900 text-gray-400 hover:text-white border border-gray-800'
@@ -233,80 +340,170 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-800/60">
-                {withdrawals.map(req => (
-                  <tr key={req.id} className="hover:bg-gray-800/40 transition-colors">
-                    <td className="py-3.5 px-4">
-                      <p className="font-bold text-white">{req.userName}</p>
-                      <p className="text-[10px] text-gray-400">{req.userEmail}</p>
-                    </td>
-
-                    <td className="py-3.5 px-4">
-                      <p className="font-semibold text-yellow-400">{req.methodName}</p>
-                      <div className="text-[10px] text-gray-400 font-mono mt-0.5">
-                        {Object.entries(req.accountDetails).map(([k, v]) => (
-                          <span key={k} className="block">{k}: {v}</span>
-                        ))}
-                      </div>
-                    </td>
-
-                    <td className="py-3.5 px-4 font-mono">
-                      <span className="text-white font-bold">{req.coins.toLocaleString()} Coins</span>
-                      <span className="text-emerald-400 text-[10px] block font-bold">${req.usdAmount.toFixed(2)} USD</span>
-                    </td>
-
-                    <td className="py-3.5 px-4">
-                      <span className={`px-2.5 py-1 rounded-full text-[10px] font-bold uppercase ${
-                        req.status === 'approved' ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' :
-                        req.status === 'rejected' ? 'bg-red-500/20 text-red-400 border border-red-500/30' :
-                        'bg-amber-500/20 text-amber-400 border border-amber-500/30 animate-pulse'
-                      }`}>
-                        {req.status}
-                      </span>
-                    </td>
-
-                    <td className="py-3.5 px-4">
-                      <input
-                        type="text"
-                        placeholder="Admin Note..."
-                        value={adminNote[req.id] || req.adminNote || ''}
-                        onChange={(e) => setAdminNote({ ...adminNote, [req.id]: e.target.value })}
-                        className="w-full px-2 py-1 bg-gray-950 border border-gray-800 rounded text-[11px] text-white"
-                      />
-                    </td>
-
-                    <td className="py-3.5 px-4 text-right">
-                      {req.status === 'pending' ? (
-                        <div className="flex items-center justify-end gap-2">
-                          <button
-                            onClick={() => handleApprove(req.id)}
-                            disabled={processingId === req.id}
-                            className="flex items-center gap-1 rounded-lg bg-emerald-500 px-3 py-1.5 text-[11px] font-bold text-gray-950 hover:bg-emerald-400"
-                          >
-                            <CheckCircle2 className="h-3.5 w-3.5" />
-                            <span>Approve</span>
-                          </button>
-                          <button
-                            onClick={() => handleReject(req.id)}
-                            disabled={processingId === req.id}
-                            className="flex items-center gap-1 rounded-lg bg-red-500/20 border border-red-500/40 px-3 py-1.5 text-[11px] font-bold text-red-400 hover:bg-red-500 hover:text-white"
-                          >
-                            <XCircle className="h-3.5 w-3.5" />
-                            <span>Reject</span>
-                          </button>
-                        </div>
-                      ) : (
-                        <span className="text-[10px] text-gray-500 uppercase">Processed</span>
-                      )}
+                {withdrawals.length === 0 ? (
+                  <tr>
+                    <td colSpan={6} className="py-8 text-center text-gray-500 text-xs">
+                      No withdrawal requests in database.
                     </td>
                   </tr>
-                ))}
+                ) : (
+                  withdrawals.map(req => (
+                    <tr key={req.id} className="hover:bg-gray-800/40 transition-colors">
+                      <td className="py-3.5 px-4">
+                        <p className="font-bold text-white">{req.userName}</p>
+                        <p className="text-[10px] text-gray-400">{req.userEmail}</p>
+                      </td>
+
+                      <td className="py-3.5 px-4">
+                        <p className="font-semibold text-yellow-400">{req.methodName}</p>
+                        <div className="text-[10px] text-gray-400 font-mono mt-0.5">
+                          {Object.entries(req.accountDetails).map(([k, v]) => (
+                            <span key={k} className="block">{k}: {v}</span>
+                          ))}
+                        </div>
+                      </td>
+
+                      <td className="py-3.5 px-4 font-mono">
+                        <span className="text-white font-bold">{req.coins.toLocaleString()} Coins</span>
+                        <span className="text-emerald-400 text-[10px] block font-bold">${req.usdAmount.toFixed(2)} USD</span>
+                      </td>
+
+                      <td className="py-3.5 px-4">
+                        <span className={`px-2.5 py-1 rounded-full text-[10px] font-bold uppercase ${
+                          req.status === 'approved' ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' :
+                          req.status === 'rejected' ? 'bg-red-500/20 text-red-400 border border-red-500/30' :
+                          'bg-amber-500/20 text-amber-400 border border-amber-500/30 animate-pulse'
+                        }`}>
+                          {req.status}
+                        </span>
+                      </td>
+
+                      <td className="py-3.5 px-4">
+                        <input
+                          type="text"
+                          placeholder="Admin Note..."
+                          value={adminNote[req.id] || req.adminNote || ''}
+                          onChange={(e) => setAdminNote({ ...adminNote, [req.id]: e.target.value })}
+                          className="w-full px-2 py-1 bg-gray-950 border border-gray-800 rounded text-[11px] text-white"
+                        />
+                      </td>
+
+                      <td className="py-3.5 px-4 text-right">
+                        {req.status === 'pending' ? (
+                          <div className="flex items-center justify-end gap-2">
+                            <button
+                              onClick={() => handleApprove(req.id)}
+                              disabled={processingId === req.id}
+                              className="flex items-center gap-1 rounded-lg bg-emerald-500 px-3 py-1.5 text-[11px] font-bold text-gray-950 hover:bg-emerald-400"
+                            >
+                              <CheckCircle2 className="h-3.5 w-3.5" />
+                              <span>Approve</span>
+                            </button>
+                            <button
+                              onClick={() => handleReject(req.id)}
+                              disabled={processingId === req.id}
+                              className="flex items-center gap-1 rounded-lg bg-red-500/20 border border-red-500/40 px-3 py-1.5 text-[11px] font-bold text-red-400 hover:bg-red-500 hover:text-white"
+                            >
+                              <XCircle className="h-3.5 w-3.5" />
+                              <span>Reject</span>
+                            </button>
+                          </div>
+                        ) : (
+                          <span className="text-[10px] text-gray-500 uppercase">Processed</span>
+                        )}
+                      </td>
+                    </tr>
+                  ))
+                )}
               </tbody>
             </table>
           </div>
         </div>
       )}
 
-      {/* TAB 2: PAYMENT METHOD MANAGER */}
+      {/* TAB 2: USER DIRECTORY & MANAGEMENT */}
+      {activeTab === 'users' && (
+        <div className="rounded-3xl border border-gray-800 bg-gray-900/90 overflow-hidden shadow-xl space-y-4 p-4">
+          <div className="flex items-center justify-between">
+            <h3 className="text-sm font-bold text-white uppercase tracking-wider">Live Registered Users</h3>
+            <button
+              onClick={fetchUsers}
+              className="px-3 py-1 bg-purple-600 text-white rounded-lg text-xs font-bold"
+            >
+              Refresh List
+            </button>
+          </div>
+
+          <div className="overflow-x-auto">
+            <table className="w-full text-left text-xs text-gray-300">
+              <thead className="bg-gray-950 text-gray-400 uppercase text-[10px]">
+                <tr>
+                  <th className="py-3 px-4">User</th>
+                  <th className="py-3 px-4">Role</th>
+                  <th className="py-3 px-4">Coins Balance</th>
+                  <th className="py-3 px-4">Total Earned</th>
+                  <th className="py-3 px-4">Streak</th>
+                  <th className="py-3 px-4">Status</th>
+                  <th className="py-3 px-4 text-right">Actions</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-800/60">
+                {usersList.length === 0 ? (
+                  <tr>
+                    <td colSpan={7} className="py-8 text-center text-gray-500 text-xs">
+                      No registered users found.
+                    </td>
+                  </tr>
+                ) : (
+                  usersList.map(u => (
+                    <tr key={u.id} className="hover:bg-gray-800/40 transition-colors">
+                      <td className="py-3.5 px-4">
+                        <p className="font-bold text-white">{u.name}</p>
+                        <p className="text-[10px] text-gray-400 font-mono">{u.email}</p>
+                      </td>
+                      <td className="py-3.5 px-4">
+                        <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${u.role === 'admin' ? 'bg-purple-500/20 text-purple-300' : 'bg-gray-800 text-gray-300'}`}>
+                          {u.role.toUpperCase()}
+                        </span>
+                      </td>
+                      <td className="py-3.5 px-4 font-mono font-bold text-yellow-400">
+                        {u.coins.toLocaleString()} Coins (${u.usdValue.toFixed(2)})
+                      </td>
+                      <td className="py-3.5 px-4 font-mono text-gray-300">
+                        {(u.totalEarned || 0).toLocaleString()} Coins
+                      </td>
+                      <td className="py-3.5 px-4 font-mono text-amber-400">
+                        🔥 {u.streakDays} Days
+                      </td>
+                      <td className="py-3.5 px-4">
+                        <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${u.banned ? 'bg-red-500/20 text-red-400' : 'bg-emerald-500/20 text-emerald-400'}`}>
+                          {u.banned ? 'BANNED' : 'ACTIVE'}
+                        </span>
+                      </td>
+                      <td className="py-3.5 px-4 text-right space-x-2">
+                        <button
+                          onClick={() => handleAdjustCoins(u, 1000)}
+                          className="px-2 py-1 bg-yellow-500/20 border border-yellow-500/40 text-yellow-400 rounded text-[10px] font-bold hover:bg-yellow-500 hover:text-black"
+                        >
+                          +1,000 Coins
+                        </button>
+                        <button
+                          onClick={() => handleToggleBan(u)}
+                          className={`px-2 py-1 rounded text-[10px] font-bold ${u.banned ? 'bg-emerald-500/20 text-emerald-400' : 'bg-red-500/20 text-red-400'}`}
+                        >
+                          {u.banned ? 'Unban' : 'Ban'}
+                        </button>
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
+
+      {/* TAB 3: PAYMENT METHOD MANAGER */}
       {activeTab === 'methods' && (
         <div className="space-y-4">
           <div className="flex justify-between items-center">
@@ -411,7 +608,113 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
         </div>
       )}
 
-      {/* TAB 4: REVENUE ANALYTICS */}
+      {/* TAB 4: OFFERWALL MANAGER */}
+      {activeTab === 'offers' && (
+        <div className="space-y-4">
+          <div className="flex justify-between items-center">
+            <h3 className="text-sm font-bold text-white uppercase tracking-wider">Offerwall Task Catalog</h3>
+            <button
+              onClick={() => {
+                setOfferForm({ title: '', provider: 'AdGate Media', description: '', category: 'gaming', rewardCoins: 5000, estimatedMinutes: 15 });
+                setShowOfferModal(true);
+              }}
+              className="flex items-center gap-1.5 rounded-xl bg-purple-600 px-4 py-2 text-xs font-bold text-white hover:bg-purple-500"
+            >
+              <Plus className="h-4 w-4" />
+              <span>Add Offer Task</span>
+            </button>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {offers.map(off => (
+              <div key={off.id} className="rounded-2xl border border-gray-800 bg-gray-900 p-4 space-y-2">
+                <div className="flex items-center justify-between">
+                  <h4 className="text-sm font-bold text-white">{off.title}</h4>
+                  <button
+                    onClick={() => handleDeleteOffer(off.id)}
+                    className="p-1 rounded bg-red-500/20 text-red-400 hover:bg-red-500 hover:text-white"
+                  >
+                    <Trash2 className="h-3.5 w-3.5" />
+                  </button>
+                </div>
+                <p className="text-xs text-gray-400">{off.provider} • {off.category}</p>
+                <p className="text-xs text-gray-300">{off.description}</p>
+                <div className="text-xs font-mono text-yellow-400 font-bold">
+                  Reward: {off.rewardCoins.toLocaleString()} Coins (${off.usdReward.toFixed(2)})
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {showOfferModal && (
+            <div className="fixed inset-0 z-50 flex items-center justify-center bg-gray-950/80 p-4 backdrop-blur-md">
+              <form onSubmit={handleSaveOfferSubmit} className="w-full max-w-md rounded-3xl border border-purple-500/30 bg-gray-900 p-6 space-y-4">
+                <h3 className="text-base font-bold text-white">Create New Offerwall Task</h3>
+                
+                <div>
+                  <label className="block text-xs text-gray-300 mb-1">Task Title</label>
+                  <input
+                    type="text"
+                    required
+                    placeholder="e.g. Complete Survey on Tech"
+                    value={offerForm.title || ''}
+                    onChange={(e) => setOfferForm({ ...offerForm, title: e.target.value })}
+                    className="w-full rounded-xl border border-gray-800 bg-gray-950 px-3 py-2 text-xs text-white"
+                  />
+                </div>
+
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-xs text-gray-300 mb-1">Provider</label>
+                    <input
+                      type="text"
+                      value={offerForm.provider || 'AdGate Media'}
+                      onChange={(e) => setOfferForm({ ...offerForm, provider: e.target.value })}
+                      className="w-full rounded-xl border border-gray-800 bg-gray-950 px-3 py-2 text-xs text-white"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs text-gray-300 mb-1">Reward Coins</label>
+                    <input
+                      type="number"
+                      value={offerForm.rewardCoins || 5000}
+                      onChange={(e) => setOfferForm({ ...offerForm, rewardCoins: Number(e.target.value) })}
+                      className="w-full rounded-xl border border-gray-800 bg-gray-950 px-3 py-2 text-xs text-white"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-xs text-gray-300 mb-1">Description</label>
+                  <textarea
+                    value={offerForm.description || ''}
+                    onChange={(e) => setOfferForm({ ...offerForm, description: e.target.value })}
+                    className="w-full rounded-xl border border-gray-800 bg-gray-950 px-3 py-2 text-xs text-white"
+                  />
+                </div>
+
+                <div className="flex justify-end gap-2 pt-2">
+                  <button
+                    type="button"
+                    onClick={() => setShowOfferModal(false)}
+                    className="px-4 py-2 rounded-xl border border-gray-800 text-xs text-gray-400"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    className="px-4 py-2 rounded-xl bg-purple-600 text-xs font-bold text-white hover:bg-purple-500"
+                  >
+                    Create Task
+                  </button>
+                </div>
+              </form>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* TAB 5: REVENUE ANALYTICS */}
       {activeTab === 'analytics' && (
         <div className="rounded-3xl border border-gray-800 bg-gray-900/90 p-6 space-y-4">
           <h3 className="text-sm font-bold text-white uppercase tracking-wider">Revenue vs Payout Performance</h3>
@@ -430,7 +733,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
         </div>
       )}
 
-      {/* TAB 5: AI ANTI-FRAUD SECURITY */}
+      {/* TAB 6: AI ANTI-FRAUD SECURITY */}
       {activeTab === 'fraud' && (
         <div className="rounded-3xl border border-purple-500/30 bg-gray-900 p-6 space-y-4">
           <div className="flex items-center justify-between">

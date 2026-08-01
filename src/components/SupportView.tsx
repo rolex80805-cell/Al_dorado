@@ -4,7 +4,7 @@ import { HelpCircle, ChevronDown, ChevronUp, Bot, Send, MessageSquare } from 'lu
 export const SupportView: React.FC = () => {
   const [openFaq, setOpenFaq] = useState<number | null>(0);
   const [chatMessages, setChatMessages] = useState<Array<{ sender: 'user' | 'ai'; text: string }>>([
-    { sender: 'ai', text: 'Hello! I am the Aldorado AI Support Assistant. Ask me anything about offerwall tracking, withdrawal times, or daily bonuses!' }
+    { sender: 'ai', text: 'Hello! I am the El Doorado AI Support Assistant. Ask me anything about CPX surveys, offerwall tracking, withdrawal times, or daily bonuses!' }
   ]);
   const [userQuery, setUserQuery] = useState('');
 

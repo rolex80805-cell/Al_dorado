@@ -29,7 +29,7 @@ export const ReferralView: React.FC<ReferralViewProps> = ({ user }) => {
               <h2 className="text-2xl font-black text-white">Referral Ambassador System</h2>
             </div>
             <p className="text-xs text-gray-400 mt-1">
-              Invite friends to Aldorado Rewards and earn a <strong className="text-emerald-400">10% Lifetime Commission</strong> on every single offer task they complete!
+              Invite friends to El Doorado Rewards and earn a <strong className="text-emerald-400">10% Lifetime Commission</strong> on every single offer task they complete!
             </p>
           </div>
 

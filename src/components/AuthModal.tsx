@@ -14,8 +14,8 @@ export const AuthModal: React.FC<AuthModalProps> = ({
   onLoginWithEmail
 }) => {
   const [mode, setMode] = useState<'login' | 'signup'>('login');
-  const [email, setEmail] = useState('jordan@aldorado.com');
-  const [password, setPassword] = useState('••••••••');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
 
   if (!isOpen) return null;
 
@@ -45,29 +45,23 @@ export const AuthModal: React.FC<AuthModalProps> = ({
         </button>
 
         {/* Modal Header */}
-        <div className="text-center">
+        <div className="text-center flex flex-col items-center">
+          <img 
+            src="/logo.png" 
+            alt="El Doorado Logo" 
+            referrerPolicy="no-referrer"
+            className="h-12 w-12 rounded-2xl object-contain bg-[#0D1117] p-1 border border-[#FFD700]/40 shadow-lg mb-2" 
+          />
           <h3 className="text-xl font-black text-white">
-            {mode === 'login' ? 'Sign In to Aldorado' : 'Create Free Account'}
+            {mode === 'login' ? 'Sign In to El Doorado' : 'Create Free Account'}
           </h3>
           <p className="text-xs text-gray-400 mt-1">Start completing verified offer tasks and earn instant coins.</p>
         </div>
 
-        {/* Quick Account Selector for Testing */}
+        {/* Quick Admin Access Selector */}
         <div className="rounded-2xl bg-gray-950 p-3 border border-yellow-500/20 text-center space-y-2">
           <p className="text-[10px] font-bold text-yellow-400 uppercase tracking-wider">Quick Sign In Options</p>
           <div className="space-y-1.5">
-            <button
-              type="button"
-              onClick={() => handleQuickLogin('jordan@aldorado.com')}
-              className="flex w-full items-center justify-between rounded-xl bg-yellow-500/10 border border-yellow-500/30 px-3 py-2 text-xs font-semibold text-yellow-400 hover:bg-yellow-500 hover:text-gray-950 transition-all"
-            >
-              <div className="flex items-center gap-2">
-                <UserIcon className="h-3.5 w-3.5" />
-                <span>Standard User (jordan@aldorado.com)</span>
-              </div>
-              <span className="text-[10px] bg-yellow-500/20 px-2 py-0.5 rounded text-yellow-300">User</span>
-            </button>
-
             <button
               type="button"
               onClick={() => handleQuickLogin('rolex80805@gmail.com')}
@@ -103,7 +97,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
               <input
                 type="email"
                 required
-                placeholder="Enter your email"
+                placeholder="you@example.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 className="w-full rounded-xl border border-gray-800 bg-gray-950 pl-9 pr-4 py-2.5 text-xs text-white focus:outline-none focus:border-yellow-500/50"
@@ -123,6 +117,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
               <input
                 type="password"
                 required
+                placeholder="••••••••"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 className="w-full rounded-xl border border-gray-800 bg-gray-950 pl-9 pr-4 py-2.5 text-xs text-white focus:outline-none focus:border-yellow-500/50"
@@ -140,7 +135,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
 
         <div className="text-center pt-1">
           <p className="text-[11px] text-gray-500">
-            * Note: Admin Panel is restricted to authorized emails only (<span className="text-purple-300">rolex80805@gmail.com</span> and <span className="text-purple-300">mr.malik8805@gmail.com</span>).
+            * Admin Panel is restricted to authorized emails (<span className="text-purple-300">rolex80805@gmail.com</span> and <span className="text-purple-300">mr.malik8805@gmail.com</span>).
           </p>
         </div>
 

@@ -2,6 +2,29 @@ import { Offer, PaymentMethod, LeaderboardEntry, PlatformStats, Achievement, Ann
 
 export const INITIAL_OFFERS: Offer[] = [
   {
+    id: 'off-cpx-1',
+    title: 'CPX Research Paid Daily Surveys & Opinion Wall',
+    provider: 'CPX Research',
+    description: 'Complete top paying market research surveys tailored to your demographic. Instant postback verification.',
+    category: 'surveys',
+    rewardCoins: 5000,
+    usdReward: 5.00,
+    estimatedMinutes: 8,
+    difficulty: 'easy',
+    logoUrl: 'https://images.unsplash.com/photo-1551836022-d5d88e9218df?auto=format&fit=crop&w=120&q=80',
+    badge: 'CPX LIVE',
+    instructions: [
+      'Click "Start Task" to launch CPX Research survey wall.',
+      'Answer profile questions honestly.',
+      'Complete any available survey.',
+      'Postback callback automatically credits 5,000 coins ($5.00) instantly!'
+    ],
+    requirements: 'Available globally on mobile and desktop.',
+    isPopular: true,
+    isFeatured: true,
+    completionsCount: 5120
+  },
+  {
     id: 'off-1',
     title: 'Reach City Hall Level 10 in Clash of Empires',
     provider: 'AdGate Media',
@@ -22,7 +45,7 @@ export const INITIAL_OFFERS: Offer[] = [
     requirements: 'New mobile users only. Must enable app tracking.',
     isPopular: true,
     isFeatured: true,
-    completionsCount: 1420
+    completionsCount: 0
   },
   {
     id: 'off-2',
@@ -44,7 +67,7 @@ export const INITIAL_OFFERS: Offer[] = [
     requirements: 'Age 18+. Valid email address.',
     isPopular: true,
     isFeatured: false,
-    completionsCount: 3890
+    completionsCount: 0
   },
   {
     id: 'off-3',
@@ -67,7 +90,7 @@ export const INITIAL_OFFERS: Offer[] = [
     requirements: 'New users only. KYC verification required.',
     isPopular: true,
     isFeatured: true,
-    completionsCount: 650
+    completionsCount: 0
   },
   {
     id: 'off-4',
@@ -89,7 +112,7 @@ export const INITIAL_OFFERS: Offer[] = [
     requirements: 'Valid payment method for trial verification.',
     isPopular: false,
     isFeatured: false,
-    completionsCount: 2100
+    completionsCount: 0
   },
   {
     id: 'off-5',
@@ -111,7 +134,7 @@ export const INITIAL_OFFERS: Offer[] = [
     requirements: 'No ad-blockers allowed.',
     isPopular: true,
     isFeatured: true,
-    completionsCount: 8900
+    completionsCount: 0
   },
   {
     id: 'off-6',
@@ -133,7 +156,7 @@ export const INITIAL_OFFERS: Offer[] = [
     requirements: 'Desktop browser or mobile Web.',
     isPopular: false,
     isFeatured: false,
-    completionsCount: 1120
+    completionsCount: 0
   }
 ];
 
@@ -195,56 +218,7 @@ export const INITIAL_PAYMENT_METHODS: PaymentMethod[] = [
   }
 ];
 
-export const INITIAL_LEADERBOARD: LeaderboardEntry[] = [
-  {
-    rank: 1,
-    userId: 'user-top-1',
-    name: 'Alexander Vault',
-    avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=120&q=80',
-    coinsEarned: 482500,
-    offersCompleted: 142,
-    referrals: 89,
-    badge: 'Diamond Master'
-  },
-  {
-    rank: 2,
-    userId: 'user-top-2',
-    name: 'Sophia Chen',
-    avatar: 'https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=120&q=80',
-    coinsEarned: 395000,
-    offersCompleted: 118,
-    referrals: 64,
-    badge: 'Platinum Crown'
-  },
-  {
-    rank: 3,
-    userId: 'user-top-3',
-    name: 'Marcus Sterling',
-    avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=120&q=80',
-    coinsEarned: 320400,
-    offersCompleted: 96,
-    referrals: 52,
-    badge: 'Gold Elite'
-  },
-  {
-    rank: 4,
-    userId: 'user-top-4',
-    name: 'Elena Rostova',
-    avatar: 'https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=120&q=80',
-    coinsEarned: 275000,
-    offersCompleted: 84,
-    referrals: 41
-  },
-  {
-    rank: 5,
-    userId: 'user-top-5',
-    name: 'David Miller',
-    avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=120&q=80',
-    coinsEarned: 210900,
-    offersCompleted: 73,
-    referrals: 28
-  }
-];
+export const INITIAL_LEADERBOARD: LeaderboardEntry[] = [];
 
 export const INITIAL_ACHIEVEMENTS: Achievement[] = [
   {
@@ -252,9 +226,9 @@ export const INITIAL_ACHIEVEMENTS: Achievement[] = [
     title: 'First Step to Fortune',
     description: 'Complete your first verified offer task.',
     icon: 'Award',
-    progress: 1,
+    progress: 0,
     maxProgress: 1,
-    completed: true,
+    completed: false,
     rewardCoins: 500
   },
   {
@@ -262,7 +236,7 @@ export const INITIAL_ACHIEVEMENTS: Achievement[] = [
     title: 'Streak Titan',
     description: 'Maintain a 7-day login & bonus claim streak.',
     icon: 'Zap',
-    progress: 5,
+    progress: 0,
     maxProgress: 7,
     completed: false,
     rewardCoins: 2500
@@ -272,7 +246,7 @@ export const INITIAL_ACHIEVEMENTS: Achievement[] = [
     title: 'Referral Ambassador',
     description: 'Invite 5 active friends who complete at least 1 offer.',
     icon: 'Users',
-    progress: 3,
+    progress: 0,
     maxProgress: 5,
     completed: false,
     rewardCoins: 5000
@@ -282,7 +256,7 @@ export const INITIAL_ACHIEVEMENTS: Achievement[] = [
     title: 'Gold Collector',
     description: 'Accumulate a total of 100,000 coins earned.',
     icon: 'Crown',
-    progress: 18450,
+    progress: 0,
     maxProgress: 100000,
     completed: false,
     rewardCoins: 10000
@@ -300,20 +274,20 @@ export const INITIAL_ANNOUNCEMENTS: Announcement[] = [
   {
     id: 'ann-2',
     title: '⚡ Instant USDT & PayPal Payout System Upgraded',
-    content: 'All verified crypto & PayPal withdrawal requests are now processed automatically within 10 minutes!',
+    content: 'All verified crypto & PayPal withdrawal requests are processed automatically upon admin approval!',
     type: 'info',
     createdAt: '1 day ago'
   }
 ];
 
 export const INITIAL_PLATFORM_STATS: PlatformStats = {
-  totalUsers: 148920,
-  totalCoinsPaid: 348920000,
-  totalUsdPaid: 348920.00,
-  offersCompletedCount: 924150,
-  withdrawalsProcessedCount: 42180,
-  monthlyRevenueUsd: 84500.00,
-  monthlyAdRevenueUsd: 21800.00,
-  monthlyPayoutsUsd: 49200.00,
-  netProfitUsd: 35300.00
+  totalUsers: 2,
+  totalCoinsPaid: 0,
+  totalUsdPaid: 0,
+  offersCompletedCount: 0,
+  withdrawalsProcessedCount: 0,
+  monthlyRevenueUsd: 0,
+  monthlyAdRevenueUsd: 0,
+  monthlyPayoutsUsd: 0,
+  netProfitUsd: 0
 };

@@ -10,8 +10,21 @@ import {
   PlatformStats
 } from '../types';
 
-export async function getUserProfile(userId: string = 'usr-101'): Promise<{ user: User; achievements: Achievement[] }> {
-  const res = await fetch(`/api/user/profile/${userId}`);
+export async function loginWithEmail(email: string, name?: string): Promise<{ success: boolean; user: User }> {
+  const res = await fetch('/api/auth/login', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email, name }),
+  });
+  if (!res.ok) {
+    const errData = await res.json().catch(() => ({}));
+    throw new Error(errData.error || 'Failed to authenticate');
+  }
+  return res.json();
+}
+
+export async function getUserProfile(userId: string): Promise<{ user: User; achievements: Achievement[] }> {
+  const res = await fetch(`/api/user/profile/${encodeURIComponent(userId)}`);
   if (!res.ok) throw new Error('Failed to fetch user profile');
   return res.json();
 }
@@ -59,7 +72,7 @@ export async function simulateWebhook(provider: string, offerId: string, userId:
   const res = await fetch('/api/offers/webhook', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ provider, offerId, userId, payoutCoins, signature: 'sha256_mock_sig' }),
+    body: JSON.stringify({ provider, offerId, userId, payoutCoins }),
   });
   if (!res.ok) throw new Error('Webhook verification failed');
   return res.json();
@@ -95,8 +108,34 @@ export async function requestWithdrawal(userId: string, methodId: string, accoun
 }
 
 export async function getUserWithdrawals(userId: string): Promise<{ withdrawals: WithdrawalRequest[] }> {
-  const res = await fetch(`/api/withdrawals/${userId}`);
+  const res = await fetch(`/api/withdrawals/${encodeURIComponent(userId)}`);
   if (!res.ok) throw new Error('Failed to fetch withdrawals history');
+  return res.json();
+}
+
+export async function getAdminUsers(): Promise<{ users: User[] }> {
+  const res = await fetch('/api/admin/users');
+  if (!res.ok) throw new Error('Failed to fetch users list');
+  return res.json();
+}
+
+export async function adjustAdminUser(userId: string, coinsDelta?: number, streakDays?: number, role?: 'user' | 'admin'): Promise<{ success: boolean; user: User; message: string }> {
+  const res = await fetch('/api/admin/user/adjust', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ userId, coinsDelta, streakDays, role }),
+  });
+  if (!res.ok) throw new Error('Failed to update user profile');
+  return res.json();
+}
+
+export async function toggleAdminUserBan(userId: string): Promise<{ success: boolean; user: User; message: string }> {
+  const res = await fetch('/api/admin/user/toggle-ban', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ userId }),
+  });
+  if (!res.ok) throw new Error('Failed to toggle ban status');
   return res.json();
 }
 
@@ -123,6 +162,14 @@ export async function saveAdminOffer(offer: Offer): Promise<{ success: boolean; 
     body: JSON.stringify(offer),
   });
   if (!res.ok) throw new Error('Failed to save offer');
+  return res.json();
+}
+
+export async function deleteAdminOffer(offerId: string): Promise<{ success: boolean; offers: Offer[] }> {
+  const res = await fetch(`/api/admin/offers/${encodeURIComponent(offerId)}`, {
+    method: 'DELETE'
+  });
+  if (!res.ok) throw new Error('Failed to delete offer');
   return res.json();
 }
 

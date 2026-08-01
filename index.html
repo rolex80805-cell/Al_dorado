@@ -3,8 +3,29 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Aldorado Rewards</title>
-    <script src="https://quge5.com/88/tag.min.js" data-zone="265050" async data-cfasync="false"></script>
+    <title>El Doorado Rewards | Earn More. Live More.</title>
+    <link rel="icon" type="image/png" href="/logo.png" />
+    <link rel="apple-touch-icon" href="/logo.png" />
+    <script>
+      // Global CPX Research Configuration
+      window.cpx_app_id = "34988";
+      window.cpx_user_id = "usr-admin-1";
+
+      // Global error handler to catch and handle harmless third-party adblocker/cross-origin script errors
+      window.addEventListener('error', function (event) {
+        if (event.message === 'Script error.' || event.filename?.includes('quge5') || event.filename?.includes('cpx-research')) {
+          event.stopImmediatePropagation();
+          return true;
+        }
+      }, true);
+      window.addEventListener('unhandledrejection', function (event) {
+        if (event.reason && (event.reason.message === 'Script error.' || String(event.reason).includes('Script error.'))) {
+          event.stopImmediatePropagation();
+          event.preventDefault();
+        }
+      }, true);
+    </script>
+    <script src="https://quge5.com/88/tag.min.js" data-zone="265050" async data-cfasync="false" crossorigin="anonymous"></script>
   </head>
   <body>
     <div id="root"></div>
@@ -16,6 +37,7 @@
         });
       }
     </script>
+    <script type="text/javascript" src="https://cdn.cpx-research.com/assets/js/script_tag_v2.0.js" async crossorigin="anonymous" onerror="this.onerror=null;"></script>
   </body>
 </html>
 
